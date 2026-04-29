@@ -24,7 +24,7 @@ export default function Pricing({ onGetStarted }: PricingProps) {
     },
     {
       name: "Pro Plan",
-      price: "12",
+      price: "9.99",
       description: "Complete AI health guidance for super-users.",
       features: [
         "Unlimited habit & activity logs",
