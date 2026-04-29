@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Menu, X } from 'lucide-react';
 
-export default function Navbar() {
+interface NavbarProps {
+  onGetStarted: () => void;
+}
+
+export default function Navbar({ onGetStarted }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -50,7 +54,10 @@ export default function Navbar() {
               {link.name}
             </a>
           ))}
-          <button className="px-5 py-2 emerald-gradient rounded-full text-white text-sm font-semibold shadow-lg shadow-emerald-200/50 hover:opacity-90 transition-all active:scale-95">
+          <button 
+            onClick={onGetStarted}
+            className="px-5 py-2 emerald-gradient rounded-full text-white text-sm font-semibold shadow-lg shadow-emerald-200/50 hover:opacity-90 transition-all active:scale-95"
+          >
             Get Started Free
           </button>
         </div>
@@ -84,7 +91,13 @@ export default function Navbar() {
                   {link.name}
                 </a>
               ))}
-              <button className="w-full py-4 bg-primary-600 text-white font-semibold rounded-2xl">
+              <button 
+                onClick={() => {
+                  setIsOpen(false);
+                  onGetStarted();
+                }}
+                className="w-full py-4 bg-primary-600 text-white font-semibold rounded-2xl"
+              >
                 Get Started Free
               </button>
             </div>

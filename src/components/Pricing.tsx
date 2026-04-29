@@ -2,7 +2,11 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Check, Zap } from 'lucide-react';
 
-export default function Pricing() {
+interface PricingProps {
+  onGetStarted: () => void;
+}
+
+export default function Pricing({ onGetStarted }: PricingProps) {
   const plans = [
     {
       name: "Free Plan",
@@ -88,7 +92,9 @@ export default function Pricing() {
                 ))}
               </div>
 
-              <button className={`w-full py-5 rounded-2xl font-bold transition-all active:scale-[0.98] ${
+              <button 
+                onClick={onGetStarted}
+                className={`w-full py-5 rounded-2xl font-bold transition-all active:scale-[0.98] ${
                 plan.popular 
                 ? 'emerald-gradient text-white hover:opacity-90 hover:shadow-lg hover:shadow-emerald-600/30' 
                 : 'bg-slate-800 text-white hover:bg-slate-700'

@@ -2,7 +2,11 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Sparkles, ArrowRight } from 'lucide-react';
 
-export default function CTA() {
+interface CTAProps {
+  onGetStarted: () => void;
+}
+
+export default function CTA({ onGetStarted }: CTAProps) {
   return (
     <section className="py-24 bg-white relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-6">
@@ -45,10 +49,16 @@ export default function CTA() {
               Join 50,000+ users who are already using Healora to monitor their habits and get personalized AI coaching.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <button className="w-full sm:w-auto px-10 py-5 bg-white text-emerald-900 font-bold text-lg rounded-2xl hover:bg-emerald-50 transition-all hover:shadow-2xl active:scale-95">
+              <button 
+                onClick={onGetStarted}
+                className="w-full sm:w-auto px-10 py-5 bg-white text-emerald-900 font-bold text-lg rounded-2xl hover:bg-emerald-50 transition-all hover:shadow-2xl active:scale-95"
+              >
                 Join Healora Now
               </button>
-              <button className="w-full sm:w-auto px-10 py-5 bg-transparent text-white font-bold text-lg rounded-2xl border border-white/30 hover:bg-white/10 transition-all active:scale-95 flex items-center justify-center gap-2">
+              <button 
+                onClick={onGetStarted}
+                className="w-full sm:w-auto px-10 py-5 bg-transparent text-white font-bold text-lg rounded-2xl border border-white/30 hover:bg-white/10 transition-all active:scale-95 flex items-center justify-center gap-2"
+              >
                 Download App <ArrowRight size={20} />
               </button>
             </div>

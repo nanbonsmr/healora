@@ -2,7 +2,11 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Play, ArrowRight, CheckCircle2, Droplets, Moon, Zap, HeartPulse } from 'lucide-react';
 
-export default function Hero() {
+interface HeroProps {
+  onGetStarted: () => void;
+}
+
+export default function Hero({ onGetStarted }: HeroProps) {
   return (
     <section className="relative pt-32 pb-20 overflow-hidden lg:pt-40 lg:pb-32 bg-slate-50">
       <div className="max-w-7xl mx-auto px-8 grid lg:grid-cols-12 gap-12 items-center">
@@ -23,7 +27,10 @@ export default function Hero() {
             Track habits, get smart insights, and improve your health with personalized AI guidance designed just for you.
           </p>
           <div className="flex flex-col sm:flex-row items-center gap-4">
-            <button className="w-full sm:w-auto px-8 py-4 emerald-gradient text-white font-bold rounded-2xl shadow-xl shadow-emerald-200 transition-all hover:opacity-90 active:scale-95 flex items-center justify-center gap-2">
+            <button 
+              onClick={onGetStarted}
+              className="w-full sm:w-auto px-8 py-4 emerald-gradient text-white font-bold rounded-2xl shadow-xl shadow-emerald-200 transition-all hover:opacity-90 active:scale-95 flex items-center justify-center gap-2"
+            >
               Get Started Free <ArrowRight size={20} />
             </button>
             <button className="w-full sm:w-auto px-8 py-4 bg-white text-slate-700 font-bold rounded-2xl border border-slate-200 shadow-sm transition-all hover:bg-slate-50 active:scale-95 flex items-center justify-center gap-2">

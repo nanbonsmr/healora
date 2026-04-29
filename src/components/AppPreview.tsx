@@ -2,7 +2,11 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { ShieldCheck, Cpu, Smartphone } from 'lucide-react';
 
-export default function AppPreview() {
+interface AppPreviewProps {
+  onDownload: () => void;
+}
+
+export default function AppPreview({ onDownload }: AppPreviewProps) {
   return (
     <section className="py-24 bg-white overflow-hidden">
       <div className="max-w-7xl mx-auto px-6">
@@ -47,8 +51,18 @@ export default function AppPreview() {
               </div>
               
               <div className="mt-12 flex gap-4">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="App Store" className="h-10 hover:opacity-80 transition-opacity cursor-pointer" />
-                <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Play Store" className="h-10 hover:opacity-80 transition-opacity cursor-pointer" />
+                <img 
+                  onClick={onDownload}
+                  src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" 
+                  alt="App Store" 
+                  className="h-10 hover:opacity-80 transition-opacity cursor-pointer" 
+                />
+                <img 
+                  onClick={onDownload}
+                  src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" 
+                  alt="Play Store" 
+                  className="h-10 hover:opacity-80 transition-opacity cursor-pointer" 
+                />
               </div>
             </div>
 
