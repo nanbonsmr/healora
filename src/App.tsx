@@ -9,6 +9,7 @@ import Pricing from './components/Pricing';
 import CTA from './components/CTA';
 import Footer from './components/Footer';
 import DownloadModal from './components/DownloadModal';
+import ChatWidget from './components/ChatWidget';
 
 export default function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -30,6 +31,7 @@ export default function App() {
       </main>
       <Footer />
       <DownloadModal isOpen={isModalOpen} onClose={closeModal} />
+      <ChatWidget />
     </div>
   );
 }
