@@ -8,7 +8,9 @@ interface DownloadModalProps {
 }
 
 export default function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
+  const [isDownloading, setIsDownloading] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
+  const [progress, setProgress] = useState(0);
   // Using docs.google.com variant which sometimes bypasses Drive preview UI better
   const downloadUrl = "https://docs.google.com/uc?export=download&id=1CnvTBEnpxR4gFYjGQJ9r6achdvs2T50p";
 
@@ -17,6 +19,8 @@ export default function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
     if (!isOpen) {
       const timer = setTimeout(() => {
         setIsComplete(false);
+        setIsDownloading(false);
+        setProgress(0);
       }, 300);
       return () => clearTimeout(timer);
     }
@@ -24,20 +28,44 @@ export default function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
 
   const handleDownload = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (isComplete) return;
+    if (isDownloading || isComplete) return;
     
-    // Trigger download via hidden link without target="_blank" to avoid new tab flash
-    // If it's a direct download, the browser will stay on this page.
-    const link = document.createElement('a');
-    link.href = downloadUrl;
-    // We don't use target="_blank" to try and keep the experience in-page
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // Use a hidden iframe to trigger the download silently without navigating away
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = downloadUrl;
+    document.body.appendChild(iframe);
     
-    // Show visual feedback immediately
-    setIsComplete(true);
+    // Clean up the iframe after a few seconds
+    setTimeout(() => {
+      if (document.body.contains(iframe)) {
+        document.body.removeChild(iframe);
+      }
+    }, 5000);
+    
+    // Start progress feedback
+    setIsDownloading(true);
+    setProgress(0);
   };
+
+  // Progress simulation
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isDownloading && progress < 100) {
+      interval = setInterval(() => {
+        setProgress(prev => {
+          const next = prev + Math.random() * 20;
+          return next > 100 ? 100 : next;
+        });
+      }, 200);
+    } else if (isDownloading && progress === 100) {
+      setTimeout(() => {
+        setIsComplete(true);
+        setIsDownloading(false);
+      }, 500);
+    }
+    return () => clearInterval(interval);
+  }, [isDownloading, progress]);
 
   return (
     <AnimatePresence>
@@ -83,7 +111,7 @@ export default function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
                   Join thousands of users improving their wellness daily with AI insights.
                 </p>
 
-                <div className="mb-8 min-h-[88px]">
+                <div className="mb-8 min-h-[92px]">
                   {isComplete ? (
                     <motion.div 
                       initial={{ opacity: 0, scale: 0.9 }}
@@ -96,6 +124,23 @@ export default function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
                       <h3 className="text-xl font-bold text-slate-900 mb-1">Download Started!</h3>
                       <p className="text-sm text-slate-600 leading-relaxed italic">"Check your browser's download queue."</p>
                     </motion.div>
+                  ) : isDownloading ? (
+                    <div className="space-y-4 py-4 px-2">
+                      <div className="flex justify-between text-sm font-bold text-slate-900 mb-2">
+                        <span className="flex items-center gap-2">
+                          <Loader2 size={16} className="animate-spin text-emerald-600" />
+                          Downloading Setup...
+                        </span>
+                        <span>{Math.round(progress)}%</span>
+                      </div>
+                      <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
+                        <motion.div 
+                          initial={{ width: 0 }}
+                          animate={{ width: `${progress}%` }}
+                          className="h-full bg-emerald-600 transition-all duration-300 ease-out"
+                        />
+                      </div>
+                    </div>
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <button
