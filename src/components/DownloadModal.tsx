@@ -11,8 +11,8 @@ export default function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
   const [isDownloading, setIsDownloading] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [progress, setProgress] = useState(0);
-  // Using docs.google.com variant which sometimes bypasses Drive preview UI better
-  const downloadUrl = "https://docs.google.com/uc?export=download&id=1CnvTBEnpxR4gFYjGQJ9r6achdvs2T50p";
+  // Updated to the most direct drive download URL format
+  const downloadUrl = "https://drive.google.com/uc?export=download&id=1CnvTBEnpxR4gFYjGQJ9r6achdvs2T50p";
 
   // Reset completion state when modal closes
   useEffect(() => {
@@ -30,22 +30,21 @@ export default function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
     e.preventDefault();
     if (isDownloading || isComplete) return;
     
-    // Use a hidden iframe to trigger the download silently without navigating away
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    iframe.src = downloadUrl;
-    document.body.appendChild(iframe);
-    
-    // Clean up the iframe after a few seconds
-    setTimeout(() => {
-      if (document.body.contains(iframe)) {
-        document.body.removeChild(iframe);
-      }
-    }, 5000);
-    
     // Start progress feedback
     setIsDownloading(true);
     setProgress(0);
+
+    // Trigger actual download after a short delay to allow UI to breathe
+    setTimeout(() => {
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      // Using target="_blank" is the most reliable way to jump out of iframe constraints
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }, 600);
   };
 
   // Progress simulation
@@ -54,15 +53,15 @@ export default function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
     if (isDownloading && progress < 100) {
       interval = setInterval(() => {
         setProgress(prev => {
-          const next = prev + Math.random() * 20;
+          const next = prev + Math.random() * 15;
           return next > 100 ? 100 : next;
         });
-      }, 200);
+      }, 150);
     } else if (isDownloading && progress === 100) {
       setTimeout(() => {
         setIsComplete(true);
         setIsDownloading(false);
-      }, 500);
+      }, 800);
     }
     return () => clearInterval(interval);
   }, [isDownloading, progress]);
