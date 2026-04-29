@@ -8,55 +8,36 @@ interface DownloadModalProps {
 }
 
 export default function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
-  const [isDownloading, setIsDownloading] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const downloadUrl = "https://drive.google.com/uc?export=download&id=1CnvTBEnpxR4gFYjGQJ9r6achdvs2T50p";
+  // Using docs.google.com variant which sometimes bypasses Drive preview UI better
+  const downloadUrl = "https://docs.google.com/uc?export=download&id=1CnvTBEnpxR4gFYjGQJ9r6achdvs2T50p";
 
   // Reset completion state when modal closes
   useEffect(() => {
     if (!isOpen) {
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         setIsComplete(false);
-        setIsDownloading(false);
-        setProgress(0);
       }, 300);
+      return () => clearTimeout(timer);
     }
   }, [isOpen]);
 
   const handleDownload = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (isDownloading) return;
+    if (isComplete) return;
     
-    setIsDownloading(true);
-    setIsComplete(false);
-    setProgress(0);
+    // Trigger download via hidden link without target="_blank" to avoid new tab flash
+    // If it's a direct download, the browser will stay on this page.
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    // We don't use target="_blank" to try and keep the experience in-page
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Show visual feedback immediately
+    setIsComplete(true);
   };
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (isDownloading && progress < 100) {
-      interval = setInterval(() => {
-        setProgress(prev => {
-          const next = prev + Math.random() * 15;
-          return next > 100 ? 100 : next;
-        });
-      }, 300);
-    } else if (isDownloading && progress === 100) {
-      // Trigger actual download
-      const link = document.createElement('a');
-      link.href = downloadUrl;
-      link.target = '_blank';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      // Show complete state
-      setIsComplete(true);
-      setIsDownloading(false);
-    }
-    return () => clearInterval(interval);
-  }, [isDownloading, progress]);
 
   return (
     <AnimatePresence>
@@ -115,23 +96,6 @@ export default function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
                       <h3 className="text-xl font-bold text-slate-900 mb-1">Download Started!</h3>
                       <p className="text-sm text-slate-600 leading-relaxed italic">"Check your browser's download queue."</p>
                     </motion.div>
-                  ) : isDownloading ? (
-                    <div className="space-y-4">
-                      <div className="flex justify-between text-sm font-bold text-slate-900 mb-2">
-                        <span className="flex items-center gap-2">
-                          <Loader2 size={16} className="animate-spin text-emerald-600" />
-                          {progress < 100 ? 'Preparing Download...' : 'Starting Download...'}
-                        </span>
-                        <span>{Math.round(progress)}%</span>
-                      </div>
-                      <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
-                        <motion.div 
-                          initial={{ width: 0 }}
-                          animate={{ width: `${progress}%` }}
-                          className="h-full emerald-gradient transition-all duration-300 ease-out"
-                        />
-                      </div>
-                    </div>
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <button
